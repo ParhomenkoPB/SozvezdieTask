@@ -4,7 +4,7 @@
 QSqlQuery db_handler::connection(QSqlQuery &query){
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("127.0.0.1");
-    db.setDatabaseName("Mybd");
+    db.setDatabaseName("Mydb");
     db.setUserName("user123");
     db.setPassword("12345");
     if(!db.open())
@@ -25,6 +25,15 @@ void db_handler::select(QSqlQuery &query){
         qDebug() << query.lastError().text();
     }
 }
+QString db_handler::ekran(QString &str) {
+    //for(int i = 1; i<11;
+    int pos = str.indexOf("\'");
+    while(pos!= -1) {
+        str.insert(pos,'\\');
+        pos = str.indexOf("\'", pos);
+        }
+
+}
 void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query){
     QVariant mcc = qvar.value(1);
     QVariant mnc = qvar.value(2);
@@ -42,6 +51,8 @@ void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query){
     if (!query.exec(sql_insert))
     {
         qDebug() << query.lastError().text();
+        qDebug() << sql_insert;
+        qDebug() << "///////////////////////////////////////////";
     }
 }
 
@@ -56,9 +67,13 @@ void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query){
     QVariant brand = qvar.value(8);
     QVariant tadig = qvar.value(9);
     QVariant band = qvar.value(10);
-    QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn.toString() + ", REGION='" + region.toString() + "', COUNTRY='" + country.toString() + "', ISO='" + iso.toString() + "', OPERATOR='" + Operator.toString() + "', BRAND='" + brand.toString() + "', TADIG='" + tadig.toString() + "', BAND='" + band.toString() + "',  WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString() + ");";
+    QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn.toString() + ", REGION='" + region.toString() + "', COUNTRY='" + country.toString() + "', ISO='" + iso.toString() + "', OPERATOR='" + Operator.toString() + "', BRAND='" + brand.toString() + "', TADIG='" + tadig.toString() + "', BAND='" + band.toString() + "' WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString();
     if (!query.exec(sql_update))
     {
         qDebug() << query.lastError().text();
+        qDebug() << sql_update;
+        qDebug() << "///////////////////////////////////////////";
     }
 }
+
+

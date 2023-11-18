@@ -41,74 +41,17 @@ Cell *cell;
 using namespace QXlsx;*/
 
 
-void work () {
-QVariant mcc;
-QVariant mnc;
-QSqlQuery query;
-db_handler::connection(query);
-QMap <int, QVariant> qvar;
-int row = 2;
-db_handler::select(query);
-bool check = ReadXlsx::proverka(1,1);
-//ReadXlsx
-//check = ReadXlsx::proverka(1,1);
 
-
-while(check!=false) {
-    if((ReadXlsx::proverka(row,1) && ReadXlsx::proverka(row,1)) == true )
-    {
-     mcc = ReadXlsx::Get_value(row,1);
-     mnc = ReadXlsx::Get_value(row,2);
-}
-    //if (mnc_value != NULL && mcc_value != NULL && plmn_value != NULL) {
-    //mcc = mcc_value->readValue();
-    //mnc = mnc_value->readValue();
-    //plmn = plmn_value->readValue();
-
-    if(query.next()){
-    int mcc_db = query.value(0).toInt();
-    int mnc_db = query.value(1).toInt();
-    if( (mcc_db == mcc) && (mnc_db == mnc) )
-{
-        for(int j = 1; j<11; j++) {
-
-        if (ReadXlsx::proverka(row,j)) {
-        if(ReadXlsx::Get_value(row,j).isValid()) {
-            qvar.insert(j, ReadXlsx::Get_value(row,j).isValid());
-        }
-        }
-        }
-        db_handler::update(qvar,query);
-              qvar.clear();
-}
-}
-
-    else {
-        for(int j = 1; j<11; j++) {
-
-        if (ReadXlsx::proverka(row,j)) {
-        if(ReadXlsx::Get_value(row,j).isValid()) {
-        qvar.insert(j, ReadXlsx::Get_value(row,j).isValid());
-        }
-        }
-        }
-        db_handler::insert(qvar, query);
-        qvar.clear();
-
-
-    }
-
-row++;
-check = ReadXlsx::proverka(row, 1);
-}
-  }
 
 int main(int argc, char *argv[])
 {
 
 QCoreApplication app(argc, argv);
-while(true) {
-    work();
+QString file = "../mcc-mnc.xlsx";
+ReadXlsx::process(file);
+//while(true) {
+ //   work();
+return 0;
 }
 /*
 QMap <int, QString> parametr;
@@ -301,5 +244,4 @@ return 0;
 }
 */
 
-return 0;
-}
+
