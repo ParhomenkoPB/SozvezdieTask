@@ -10,11 +10,11 @@ class db_handler
 {
 public:
     db_handler() = default;
-    static QSqlQuery connection(QSqlQuery &query);
+    static bool connection(QSqlQuery &query);
     static void update(const QMap<int,QVariant> &qvar, QSqlQuery &query);
-    static void select(QSqlQuery &query);
+    static bool select(QSqlQuery &query, QVariant mcc, QVariant mnc);
     static void insert(const QMap<int, QVariant> &qvar, QSqlQuery &query);
-    static QString ekran(QString &str);
+    static QString ekran(const QString &str);
 };
 
 #endif // DB_HANDLER_H

@@ -35,11 +35,13 @@ qDebug() << "sucs";
 
     QVariant mcc;
     QVariant mnc;
+    int mcc_db;
+    int mnc_db;
     QSqlQuery query;
-    db_handler::connection(query);
+    if ( db_handler::connection(query) == false ) return false;
     QMap <int, QVariant> qvar;
     int row = 2;
-    db_handler::select(query);
+    //db_handler::select(query);
     bool check = ReadXlsx::proverka(1,1,xlsxR);
     //ReadXlsx
     //check = ReadXlsx::proverka(1,1);
@@ -55,12 +57,35 @@ qDebug() << "sucs";
         //mcc = mcc_value->readValue();
         //mnc = mnc_value->readValue();
         //plmn = plmn_value->readValue();
+        QVariant mcc1 = mcc;
+        QVariant mnc1 =    mnc;
+        mcc1.convert(qMetaTypeId<int>());
+        mnc1.convert(qMetaTypeId<int>());
+int count = 0;
+       db_handler::select(query,mcc,mnc);
+       //query.next();
+         //       mcc_db = query.value(0).toInt();
+           //     mnc_db = query.value(1).toInt();
+        while(query.next()) {
 
-        if(query.next()){
-            int mcc_db = query.value(0).toInt();
-            int mnc_db = query.value(1).toInt();
-            if( (mcc_db == mcc) && (mnc_db == mnc) )
-            {
+           // if(query.next()) {
+          //  if(query.next()){
+           // if( (mcc_db == mcc1) && (mnc_db == mnc1) )
+         //   query.next();
+         mcc_db = query.value(0).toInt();
+         mnc_db = query.value(1).toInt();
+         if( (mcc_db == mcc1) && (mnc_db == mnc1) ) {
+          //  }
+
+
+
+           // if(db_handler::select(query,mcc,mnc))
+
+
+      //  if( (mcc_db == mcc1) && (mnc_db == mnc1) )
+
+        //    {
+
                 for(int j = 1; j<11; j++) {
 
                     if (ReadXlsx::proverka(row,j,xlsxR)) {
@@ -70,11 +95,16 @@ qDebug() << "sucs";
                     }
                 }
                 db_handler::update(qvar,query);
-                qvar.clear();
-            }
-        }
 
-        else {
+                qDebug() << " ОБНОВЛАЕНИ " << row;
+                qvar.clear();
+                count = 1;
+}
+       //  continue;
+            }
+
+
+       if(count == 0) {
             for(int j = 1; j<11; j++) {
 
                 if (ReadXlsx::proverka(row,j,xlsxR)) {
@@ -84,6 +114,7 @@ qDebug() << "sucs";
                 }
             }
             db_handler::insert(qvar, query);
+            qDebug() << " вставка " << row;
             qvar.clear();
 
 
@@ -92,6 +123,8 @@ qDebug() << "sucs";
         row++;
         check = ReadXlsx::proverka(row, 1, xlsxR);
     }
+    return true;
+    qDebug() <<"Успешно заполнена";
 }
 
 
