@@ -24,34 +24,34 @@
 #include "xlsxworkbook.h"
 //#include <QFileInfo>
 using namespace QXlsx;
+const int column = 11;
 
 bool ReadXlsx::process(QString &file) {
 QFileInfo filexlsx(file);
     if(!filexlsx.exists()) {
-        qDebug() << "fail no exists";
+        qDebug() << "Fail no exists";
         return false;
     }
 
 if(!filexlsx.isReadable())
 {
-    qDebug() << "ERROR: no permission to read the file";
+    qDebug() << "Error: no permission to read the file";
     return false;
 }
     Document xlsxR(file);
     if (!xlsxR.load()) // load excel file
     {
-qDebug() << "ERROR: file format is not xlsx";
+qDebug() << "Error: file format is not xlsx";
 return false;
     }
-    const int column = 11;
     QVariant mcc;
     QVariant mnc;
-    int mcc_db;
-    int mnc_db;
-    QSqlQuery query;
+    int count_update = 0;
+    int count_insert = 0;
     int row = 2;
-    if ( db_handler::connection(query) == false ) return false;
+    QSqlQuery query;
     QMap <int, QVariant> qvar;
+    if ( db_handler::connection(query) == false ) return false;
     bool check = ReadXlsx::proverka(1,1,xlsxR);
 
     while(check!=false) {
@@ -64,8 +64,6 @@ return false;
        db_handler::select(query,mcc,mnc);
 
            if(query.next()) {
-            mcc_db = query.value(0).toInt();
-            mnc_db = query.value(1).toInt();
 
                 for(int j = 1; j<column; j++) {
 
@@ -76,7 +74,8 @@ return false;
                     }
                 }
                 db_handler::update(qvar,query);
-                qDebug() << " ОБНОВЛАЕНИ " << row;
+                //qDebug() << " update " << row;
+                count_update++;
                 qvar.clear();
 }
 
@@ -91,7 +90,8 @@ return false;
                 }
             }
             db_handler::insert(qvar, query);
-            qDebug() << " вставка " << row;
+            //qDebug() << " insert " << row;
+            count_insert++;
             qvar.clear();
         }
 
@@ -100,12 +100,14 @@ return false;
     }
 
     qDebug() <<"Database filled successfully";
+    qDebug() << " Insert " << count_insert << " row";
+    qDebug() << " Update " << count_update << " row";
     return true;
 
 }
 
 
-bool ReadXlsx::proverka(int row, int col, Document &xlsxR) { //checking for empty string xlsx
+bool ReadXlsx::proverka(int row, int col, Document &xlsxR) { //checking cell is empty for file xlsx
 
     Cell *cell = xlsxR.cellAt(row, col);
     if(cell != NULL)
@@ -125,6 +127,6 @@ QVariant ReadXlsx::Get_value(int row, int col, Document &xlsxR) { //get value fr
     }
     else
     {
-        qDebug() << "пустая клетка";
+        qDebug() << "Cell is empty";
     }
 }
