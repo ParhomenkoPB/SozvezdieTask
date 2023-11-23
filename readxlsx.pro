@@ -32,7 +32,7 @@ HEADERS += \
     mainwindow.h \
     readxlsx.h \
     db_handler.h
-FORMS += \
-    mainwindow.ui
+#FORMS += \
+  #  mainwindow.ui
 DISTFILES += \
     mcc-mnc.xlsx

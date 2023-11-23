@@ -22,71 +22,52 @@
 #include "xlsxrichstring.h"
 #include "xlsxworkbook.h"
 #include "xlsxworkbook.h"
-
+//#include <QFileInfo>
 using namespace QXlsx;
 
 bool ReadXlsx::process(QString &file) {
-
-    Document xlsxR(file);
-    if (xlsxR.load()) // load excel file
-    {
-qDebug() << "sucs";
+QFileInfo filexlsx(file);
+    if(!filexlsx.exists()) {
+        qDebug() << "fail no exists";
+        return false;
     }
 
+if(!filexlsx.isReadable())
+{
+    qDebug() << "ERROR: no permission to read the file";
+    return false;
+}
+    Document xlsxR(file);
+    if (!xlsxR.load()) // load excel file
+    {
+qDebug() << "ERROR: file format is not xlsx";
+return false;
+    }
+    const int column = 11;
     QVariant mcc;
     QVariant mnc;
     int mcc_db;
     int mnc_db;
     QSqlQuery query;
+    int row = 2;
     if ( db_handler::connection(query) == false ) return false;
     QMap <int, QVariant> qvar;
-    int row = 2;
-    //db_handler::select(query);
     bool check = ReadXlsx::proverka(1,1,xlsxR);
-    //ReadXlsx
-    //check = ReadXlsx::proverka(1,1);
-
 
     while(check!=false) {
-        if((ReadXlsx::proverka(row,1, xlsxR) && ReadXlsx::proverka(row,1,xlsxR)) == true )
+        if((ReadXlsx::proverka(row,1, xlsxR) && ReadXlsx::proverka(row,2,xlsxR)) == true )
         {
             mcc = ReadXlsx::Get_value(row,1,xlsxR);
             mnc = ReadXlsx::Get_value(row,2,xlsxR);
         }
-        //if (mnc_value != NULL && mcc_value != NULL && plmn_value != NULL) {
-        //mcc = mcc_value->readValue();
-        //mnc = mnc_value->readValue();
-        //plmn = plmn_value->readValue();
-        QVariant mcc1 = mcc;
-        QVariant mnc1 =    mnc;
-        mcc1.convert(qMetaTypeId<int>());
-        mnc1.convert(qMetaTypeId<int>());
-int count = 0;
+
        db_handler::select(query,mcc,mnc);
-       //query.next();
-         //       mcc_db = query.value(0).toInt();
-           //     mnc_db = query.value(1).toInt();
-        while(query.next()) {
 
-           // if(query.next()) {
-          //  if(query.next()){
-           // if( (mcc_db == mcc1) && (mnc_db == mnc1) )
-         //   query.next();
-         mcc_db = query.value(0).toInt();
-         mnc_db = query.value(1).toInt();
-         if( (mcc_db == mcc1) && (mnc_db == mnc1) ) {
-          //  }
+           if(query.next()) {
+            mcc_db = query.value(0).toInt();
+            mnc_db = query.value(1).toInt();
 
-
-
-           // if(db_handler::select(query,mcc,mnc))
-
-
-      //  if( (mcc_db == mcc1) && (mnc_db == mnc1) )
-
-        //    {
-
-                for(int j = 1; j<11; j++) {
+                for(int j = 1; j<column; j++) {
 
                     if (ReadXlsx::proverka(row,j,xlsxR)) {
                         if(ReadXlsx::Get_value(row,j,xlsxR).isValid()) {
@@ -95,17 +76,13 @@ int count = 0;
                     }
                 }
                 db_handler::update(qvar,query);
-
                 qDebug() << " ОБНОВЛАЕНИ " << row;
                 qvar.clear();
-                count = 1;
 }
-       //  continue;
-            }
 
-
-       if(count == 0) {
-            for(int j = 1; j<11; j++) {
+   else
+           {
+            for(int j = 1; j<column; j++) {
 
                 if (ReadXlsx::proverka(row,j,xlsxR)) {
                     if(ReadXlsx::Get_value(row,j,xlsxR).isValid()) {
@@ -116,19 +93,19 @@ int count = 0;
             db_handler::insert(qvar, query);
             qDebug() << " вставка " << row;
             qvar.clear();
-
-
         }
 
         row++;
-        check = ReadXlsx::proverka(row, 1, xlsxR);
+        check = ReadXlsx::proverka(row,1,xlsxR);
     }
+
+    qDebug() <<"Database filled successfully";
     return true;
-    qDebug() <<"Успешно заполнена";
+
 }
 
 
-bool ReadXlsx::proverka(int row, int col, Document &xlsxR) {
+bool ReadXlsx::proverka(int row, int col, Document &xlsxR) { //checking for empty string xlsx
 
     Cell *cell = xlsxR.cellAt(row, col);
     if(cell != NULL)
@@ -137,7 +114,7 @@ bool ReadXlsx::proverka(int row, int col, Document &xlsxR) {
     return false;
 }
 
-QVariant ReadXlsx::Get_value( int row, int col, Document &xlsxR) {
+QVariant ReadXlsx::Get_value(int row, int col, Document &xlsxR) { //get value from file cell;
 
 
     Cell *XLSX_value = xlsxR.cellAt(row, col);

@@ -14,16 +14,14 @@ bool db_handler::connection(QSqlQuery &query){
     }
     else
     {
-        qDebug() << "success";
+     //   qDebug() << "success connecting";
         query = QSqlQuery(db);
         return true;
     }
 }
 
 bool db_handler::select(QSqlQuery &query, QVariant mcc, QVariant mnc){
-  //  mcc.convert(qMetaTypeId<int>());
-  //  mnc.convert(qMetaTypeId<int>());
-    QString sql_select = "SELECT mcc, mnc FROM mcc_mnc";// WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString();
+    QString sql_select = "SELECT mcc, mnc FROM mcc_mnc WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString();
     if (!query.exec(sql_select))
     {
         qDebug() << query.lastError().text();
@@ -33,8 +31,7 @@ bool db_handler::select(QSqlQuery &query, QVariant mcc, QVariant mnc){
         return true;
     }
 }
-QString db_handler::ekran(const QString &str) {
-    //for(int i = 1; i<11;
+QString db_handler::screening(const QString &str) { //экранирование символа '
     QString copy_str = str;
     int pos = copy_str.indexOf("\'");
     while(pos!= -1) {
@@ -45,19 +42,19 @@ QString db_handler::ekran(const QString &str) {
 
 }
 void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query){
-    QString mcc = ekran(qvar.value(1).toString());
-    QString mnc = ekran(qvar.value(2).toString());
-    QString plmn = ekran(qvar.value(3).toString());
-    QString region = "rara";// ekran(qvar.value(4).toString());
-    QString country = ekran(qvar.value(5).toString());
-    QString iso = ekran(qvar.value(6).toString());
-    QString Operator =  ekran(qvar.value(7).toString());
-    QString brand = ekran(qvar.value(8).toString());
-    QString tadig = ekran(qvar.value(9).toString());
-    QString band = ekran(qvar.value(10).toString());
+    QString mcc = screening(qvar.value(1).toString());
+    QString mnc = screening(qvar.value(2).toString());
+    QString plmn = screening(qvar.value(3).toString());
+    QString region = "rara";// screening(qvar.value(4).toString());
+    QString country = screening(qvar.value(5).toString());
+    QString iso = screening(qvar.value(6).toString());
+    QString Operator = screening(qvar.value(7).toString());
+    QString brand = screening(qvar.value(8).toString());
+    QString tadig = screening(qvar.value(9).toString());
+    QString bands = screening(qvar.value(10).toString());
 
-    QString sql_insert = "INSERT INTO mcc_mnc (MCC, MNC, PLMN, REGION, COUNTRY, ISO, OPERATOR, BRAND, TADIG, BAND) "
-                         " VALUES (" + mcc + ", " + mnc + ", " + plmn + " , '" + region +"' , '" + country + "' , '" + iso + "' , '" + Operator + "', '" + brand + "' , '" + tadig + "' , '" + band + "'); ";
+    QString sql_insert = "INSERT INTO mcc_mnc (MCC, MNC, PLMN, REGION, COUNTRY, ISO, OPERATOR, BRAND, TADIG, BANDS) "
+                         " VALUES (" + mcc + ", " + mnc + ", " + plmn + " , '" + region +"' , '" + country + "' , '" + iso + "' , '" + Operator + "', '" + brand + "' , '" + tadig + "' , '" + bands + "'); ";
 
     if (!query.exec(sql_insert))
     {
@@ -68,17 +65,17 @@ void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query){
 }
 
 void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query){
-    QString mcc = ekran(qvar.value(1).toString());
-    QString mnc = ekran(qvar.value(2).toString());
-    QString plmn = ekran(qvar.value(3).toString());
-    QString region = ekran(qvar.value(4).toString());
-    QString country = ekran(qvar.value(5).toString());
-    QString iso = ekran(qvar.value(6).toString());
-    QString Operator = ekran(qvar.value(7).toString());
-    QString brand = ekran(qvar.value(8).toString());
-    QString tadig = ekran(qvar.value(9).toString());
-    QString band = ekran(qvar.value(10).toString());
-    QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn + ", REGION='" + region + "', COUNTRY='" + country + "', ISO='" + iso + "', OPERATOR='" + Operator + "', BRAND='" + brand + "', TADIG='" + tadig + "', BAND='" + band + "' WHERE MCC=" + mcc + " AND MNC=" + mnc;
+    QString mcc = screening(qvar.value(1).toString());
+    QString mnc = screening(qvar.value(2).toString());
+    QString plmn = screening(qvar.value(3).toString());
+    QString region = screening(qvar.value(4).toString());
+    QString country = screening(qvar.value(5).toString());
+    QString iso = screening(qvar.value(6).toString());
+    QString Operator = screening(qvar.value(7).toString());
+    QString brand = screening(qvar.value(8).toString());
+    QString tadig = screening(qvar.value(9).toString());
+    QString bands = screening(qvar.value(10).toString());
+    QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn + ", REGION='" + region + "', COUNTRY='" + country + "', ISO='" + iso + "', OPERATOR='" + Operator + "', BRAND='" + brand + "', TADIG='" + tadig + "', BANDS='" + bands + "' WHERE MCC=" + mcc + " AND MNC=" + mnc;
     if (!query.exec(sql_update))
     {
         qDebug() << query.lastError().text();

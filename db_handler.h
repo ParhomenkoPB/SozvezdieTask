@@ -14,7 +14,7 @@ public:
     static void update(const QMap<int,QVariant> &qvar, QSqlQuery &query);
     static bool select(QSqlQuery &query, QVariant mcc, QVariant mnc);
     static void insert(const QMap<int, QVariant> &qvar, QSqlQuery &query);
-    static QString ekran(const QString &str);
+    static QString screening(const QString &str);
 };
 
 #endif // DB_HANDLER_H
