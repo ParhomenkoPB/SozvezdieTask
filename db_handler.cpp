@@ -4,9 +4,9 @@
 bool db_handler::connection(QSqlQuery &query){
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("127.0.0.1");
-    db.setDatabaseName("Mydb");
-    db.setUserName("user123");
-    db.setPassword("12345");
+    db.setDatabaseName("storage");
+    db.setUserName("postgres");
+    db.setPassword("postgres");
     if(!db.open())
     {
         qDebug() << db.lastError().text();

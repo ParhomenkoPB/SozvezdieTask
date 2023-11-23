@@ -1,0 +1,40 @@
+Скрипт для Базы:
+
+CREATE DATABASE storage
+  WITH OWNER = postgres
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       LC_COLLATE = 'ru_RU.UTF-8'
+       LC_CTYPE = 'ru_RU.UTF-8'
+       CONNECTION LIMIT = -1;
+
+
+MAC LABEL ON DATABASE storage IS '{0,0}';
+MAC CCR ON DATABASE storage IS ON;
+
+
+Скрипт для таблицы:
+
+CREATE TABLE public.mcc_mnc
+(
+  mcc integer,
+  mnc integer,
+  plmn integer,
+  region character varying(100),
+  country character varying(100),
+  iso character varying(100),
+  operator character varying(100),
+  brand character varying(100),
+  tadig character varying(100),
+  bands character varying(256)
+)
+WITH (
+  OIDS=FALSE,
+  MACS=FALSE
+);
+ALTER TABLE public.mcc_mnc
+  OWNER TO postgres;
+GRANT ALL ON TABLE public.mcc_mnc TO postgres;
+
+MAC LABEL ON TABLE public.mcc_mnc IS '{0,0}';
+MAC CCR ON TABLE public.mcc_mnc IS ON;
