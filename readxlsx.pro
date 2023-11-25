@@ -1,4 +1,4 @@
-QT += core gui sql gui-private
+QT += core sql gui-private widgets
 #greaterThan(QT_MAJOR_VERSION, 4): QT +=widgets
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -23,16 +23,14 @@ include(./QXlsx.pri)
 
 SOURCES += \
         main.cpp \
-    mainwindow.cpp \
-    mainwindow.cpp \
     readxlsx.cpp \
-    db_handler.cpp
+    db_handler.cpp \
+    mainwindow.cpp
 HEADERS += \
-    mainwindow.h \
-    mainwindow.h \
     readxlsx.h \
-    db_handler.h
-#FORMS += \
-  #  mainwindow.ui
+    db_handler.h \
+    mainwindow.h
 DISTFILES += \
     mcc-mnc.xlsx
+
+FORMS +=

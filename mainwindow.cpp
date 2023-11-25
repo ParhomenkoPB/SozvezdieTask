@@ -1,150 +1,173 @@
-/*#include "mainwindow.h"
-
-bool ReadXlsx::proverka(int row, int col) {
-    QString fail;
-Document xlsxR(fail);
-    Cell *cell = xlsxR.cellAt(row, col);
-    if(cell != NULL)
-        return true;
-
-    return false;
-}
-  QVariant ReadXlsx::Get_value( int row, int col) {
-      QString fail;
-Document xlsxR(fail);
-
-    Cell *XLSX_value = xlsxR.cellAt(row, col);
-       if (XLSX_value != NULL)
-       {
-       QVariant var = XLSX_value->readValue();
-       return var;
-       }
-       else
-       {
-           qDebug() << "пустая клетка";
-       }
-  }
-
-  QSqlQuery DB::connection(QSqlQuery *query){
-      QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-      db.setHostName("127.0.0.1");
-      db.setDatabaseName("Mybd");
-      db.setUserName("user123");
-      db.setPassword("12345");
-      if(!db.open())
-      {
-          qDebug() << db.lastError().text();
-      }
-      else
-      {
-          qDebug() << "success";
-          return query = QSqlQuery(db);
-      }
-  }
-  void DB::select(QSqlQuery &query){
-      QString sql_select = "SELECT mcc, mnc FROM mcc_mnc";
-      if (!query.exec(sql_select))
-        {
-            qDebug() << query.lastError().text();
-        }
-  }
-      void DB::insert(QMap &qvar, QSqlQuery &query){
-          QVariant mcc = qvar.value(1);
-          QVariant mnc = qvar.value(2);
-          QVariant plmn = qvar.value(3);
-          QVariant region = qvar.value(4);
-          QVariant country = qvar.value(5);
-          QVariant iso = qvar.value(6);
-          QVariant Operator = qvar.value(7);
-          QVariant brand = qvar.value(8);
-          QVariant tadig = qvar.value(9);
-          QVariant band = qvar.value(10);
-          QString sql_insert = "INSERT INTO mcc_mnc (MCC, MNC, PLMN, REGION, COUNTRY, ISO, OPERATOR, BRAND, TADIG, BAND) "
-           " VALUES (" + mcc.toString() + ", " + mnc.toString() + ", " + plmn.toString() + " , '" + region.toString() +"' , '" + country.toString() + "' , '" + iso.toString() + "' , '" + Operator.toString() + "', '" + brand.toString() + "' , '" + tadig.toString() + "' , '" + band.toString() + "'); ";
-
-          if (!query.exec(sql_insert))
-            {
-                qDebug() << query.lastError().text();
-            }
-      }
-
-      void DB::update(QMap &qvar, QSqlQuery &query, QVariant mcc, QVariant mnc){
-          QVariant plmn = qvar.value(3);
-          QVariant region = qvar.value(4);
-          QVariant country = qvar.value(5);
-          QVariant iso = qvar.value(6);
-          QVariant Operator = qvar.value(7);
-          QVariant brand = qvar.value(8);
-          QVariant tadig = qvar.value(9);
-          QVariant band = qvar.value(10);
-          QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn.toString() + ", REGION='" + region.toString() + "', COUNTRY='" + country.toString() + "', ISO='" + iso.toString() + "', OPERATOR='" + Operator.toString() + "', BRAND='" + brand.toString() + "', TADIG='" + tadig.toString() + "', BAND='" + band.toString() + "',  WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString() + ");";
-          if (!query.exec(sql_update))
-            {
-                qDebug() << query.lastError().text();
-            }
-      }
-
- //           return 0;
-
- void work () {
-QVariant mcc;
-QVariant mnc;
-QSqlQuery query;
-DB::connection(query);
-QMap <int, QVariant> qvar;
-int row = 2;
-DB::select(query);
-bool check = ReadXlsx::proverka(1,1);
-//ReadXlsx
-//check = ReadXlsx::proverka(1,1);
+﻿//#include <QMessageBox>
+#include "mainwindow.h"
+//#include "ui_mainwindow.h"
 
 
-while(check!=false) {
-    if((ReadXlsx::proverka(row,1) && ReadXlsx::proverka(row,1)) == true )
-    {
-     mcc = ReadXlsx::Get_value(row,1);
-     mnc = ReadXlsx::Get_value(row,2);
-}
-    //if (mnc_value != NULL && mcc_value != NULL && plmn_value != NULL) {
-    //mcc = mcc_value->readValue();
-    //mnc = mnc_value->readValue();
-    //plmn = plmn_value->readValue();
-
-    if(query.next()){
-    int mcc_db = query.value(0).toInt();
-    int mnc_db = query.value(1).toInt();
-    if( (mcc_db == mcc) && (mnc_db == mnc) )
+//MainWindow::MainWindow(QWidget *parent) :
+Widget::Widget(QWidget *parent)
+    : QWidget(parent)
 {
-        for(int j = 3; j<11; j++) {
+    Widget::setWindowTitle("readxlsx.exe");
+    Widget::setFixedSize(400,130);
 
-        if (ReadXlsx::proverka(row,j)) {
-        if(ReadXlsx::Get_value(row,j).isValid()) {
-            qvar.insert(j, ReadXlsx::Get_value(row,j).isValid());
-        }
-        }
-        }
-        DB::update(qvar,query, mcc, mnc);
-              qvar.clear();
-}
+    LineOpenFile = new QLineEdit();
+    LineOpenFile->setReadOnly(true);
+
+    OpenFileButton = new QPushButton;
+    ExecButton = new QPushButton("Выполнить");
+    label = new QLabel();
+
+    pixmap = QPixmap("/..Button.png");
+    OpenFileButton->setIcon(pixmap);
+    OpenFileButton->setIconSize(QSize(30,30));
+
+    // vlayout = new QFormLayout;
+    // vlayout->addRow(LineOpenFile, OpenFileButton);
+    // vlayout->setFormAlignment(Qt::AlignRight | Qt::AlignRight);
+    // vlayout->setMargin(20);
+
+    gridLayout = new QGridLayout;
+    OpenFileButton->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed, QSizePolicy::ToolButton));
+    gridLayout->addWidget(LineOpenFile, 0, 0, Qt::Alignment());
+    gridLayout->addWidget(OpenFileButton, 0, 1, Qt::Alignment());
+    //gridLayout->setMargin(30);
+
+    ExecLayout = new QHBoxLayout;
+    ExecButton->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed, QSizePolicy::ToolButton));
+    ExecLayout->addWidget(ExecButton);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mainLayout->addLayout(gridLayout);
+    mainLayout->addWidget(label);
+    mainLayout->addLayout(ExecLayout);
+
+    connect(OpenFileButton, &QPushButton::clicked, this, &Widget::on_OpenFileButton_clicked);
+    connect(ExecButton, &QPushButton::clicked, this, &Widget::on_ExecButton_clicked);
 }
 
+
+//QVBoxLayout vlayout = new QVBoxLayout();
+//vlayout->addWidget(OpenFileButton);
+//QString str1;
+// ui->setupUi(this);
+//QObject::connect( ui->OpenFileButton, &QPushButton::clicked, this, &MainWindow::on_OpenFileButton_clicked );
+//  setLayout(vlayout);
+//vlayout->setLabelAlignment(Qt::AlignHCenter | Qt::AlignTop);
+//LineOpenFile->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed, QSizePolicy::ToolButton));
+
+
+
+//  vlayout->setFieldGrowthPolicy(QFormLayout::FieldsStayAtSizeHint);
+//  vlayout->setVerticalSpacing(100);
+//  vlayout->setLabelAlignment(Qt::AlignLeft);
+
+
+//  QHBoxLayout *dLayout = new QHBoxLayout();
+// setLayout(dLayout);
+// dLayout->addWidget(ExecButton);
+
+// gridLayout->addWidget(LineOpenFile, 0, 0, Qt::Alignment(1));
+// gridLayout->addWidget(OpenFileButton, 0, 1, Qt::Alignment());
+
+
+// vlayout = new QFormLayout();
+//vlayout->setLabelAlignment(Qt::AlignHCenter | Qt::AlignTop);
+// vlayout->addRow(LineOpenFile, OpenFileButton);
+
+//   QFormLayout *leftLayout = new QFormLayout(this);
+//leftLayout->setMargin(100);
+//   leftLayout->addWidget(LineOpenFile, 0, 0);
+//leftLayout->addWidget(OpenFileButton, 0, 1);
+//leftLayout->addWidget(label, 1, 0);
+
+//        leftLayout->addRow(LineOpenFile, OpenFileButton);
+//       leftLayout->setLabelAlignment(Qt::AlignRight | Qt::AlignRight);
+
+
+//rightLayout->addStretch();
+
+
+
+
+
+
+// mainLayout->setMargin(100);
+// mainLayout->setSpacing(10);
+// mainLayout->addStretch(1);
+
+//mainLayout->setSpacing(10);
+
+
+Widget::~Widget()
+{
+    // delete ui;
+}
+
+/*void Widget::open(QLayout *layout) {
+  OpenFileButton = new QPushButton("Выбрать файл");
+  OpenFileButton->move(10, 10);
+  OpenFileButton->setGeometry(QRect(QPoint(100, 100), QSize(200, 50)));
+  layout->addWidget(OpenFileButton);
+}
+*/
+void Widget::on_OpenFileButton_clicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, "Выбрать файл");
+    //ui->label->setText(file);
+    LineOpenFile->setText(file);
+    file_path = file;
+}
+
+void Widget::on_ExecButton_clicked()
+{
+    QString Error;
+    QString Success;
+    bool check_out = ReadXlsx::process(file_path,Error);
+    if(check_out == false) {
+        QMessageBox mes;
+        mes.setWindowTitle("Error!");
+        mes.setStyleSheet("QLabel{min-width: 400px;}");
+        mes.setStandardButtons(QMessageBox::Close);
+        mes.setText(Error);
+        mes.exec();
+    }
     else {
-        for(int j = 1; j<11; j++) {
-
-        if (ReadXlsx::proverka(row,j)) {
-        if(ReadXlsx::Get_value(row,j).isValid()) {
-        qvar.insert(j, ReadXlsx::Get_value(row,j).isValid());
-        }
-        }
-        }
-        DB::insert(qvar, query);
-        qvar.clear();
-
-
+        Success = Error;
+        label->setText(Error);
+        label->setWordWrap(true);
     }
 
-row++;
-check = ReadXlsx::proverka(row, 1);
 }
-  }
+//on_OpenFileButton_clicked();
+/*void MainWindow::on_OpenFileButton_clicked() //кнопка выбрать
+{
+QString file = QFileDialog::getOpenFileName(this, "Выбрать файл");
+//ui->label->setText(file);
+//file_path = file;
+}
+
+
+void MainWindow::on_pushButton_2_clicked() //Кнопка применить
+{
+QString Error;
+QString File;
+   bool check_out = ReadXlsx::process(File,Error);
+   if(check_out == false) {
+       QMessageBox::about(this, "Error", Error);
+   }
+
+
+ //ui->label->setText(Error1);
+}
+*/
+/*void MainWindow::on_OpenFileButton_clicked() //кнопка выбрать
+{
+    QPushButton *select = new QPushButton("Select File");
+    layout->addWidget(select);
+    connect( select, &QPushButton::clicked, this, &MainWindow::OpenFileButton );
+QString file = QFileDialog::getOpenFileName(this, "Выбрать файл");
+ui->label->setText(file);
+file_path = file;
+}
+
 */

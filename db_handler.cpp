@@ -1,7 +1,7 @@
 #include "db_handler.h"
 #include <QDebug>
 
-bool db_handler::connection(QSqlQuery &query){
+bool db_handler::connection(QSqlQuery &query, QString &Error){
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
     db.setHostName("127.0.0.1");
     db.setDatabaseName("storage");
@@ -9,21 +9,23 @@ bool db_handler::connection(QSqlQuery &query){
     db.setPassword("postgres");
     if(!db.open())
     {
+        Error = db.lastError().text();
         qDebug() << db.lastError().text();
         return false;
     }
     else
     {
-     //   qDebug() << "Success connecting";
+        //   qDebug() << "Success connecting";
         query = QSqlQuery(db);
         return true;
     }
 }
 
-bool db_handler::select(QSqlQuery &query, QVariant mcc, QVariant mnc){
+bool db_handler::select(QSqlQuery &query, QVariant mcc, QVariant mnc, QString &Error){
     QString sql_select = "SELECT mcc, mnc FROM mcc_mnc WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString();
     if (!query.exec(sql_select))
     {
+        Error = query.lastError().text();
         qDebug() << query.lastError().text();
         return false;
     }
@@ -35,13 +37,13 @@ QString db_handler::screening(const QString &str) { //экранирование
     QString copy_str = str;
     int pos = copy_str.indexOf("\'");
     while(pos!= -1) {
-       copy_str.insert(pos,'\'');
+        copy_str.insert(pos,'\'');
         pos = copy_str.indexOf("\'", pos+2);
-        }
+    }
     return copy_str;
 
 }
-void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query){
+void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query, QString &Error){
     QString mcc = screening(qvar.value(1).toString());
     QString mnc = screening(qvar.value(2).toString());
     QString plmn = screening(qvar.value(3).toString());
@@ -58,13 +60,14 @@ void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query){
 
     if (!query.exec(sql_insert))
     {
+        Error = query.lastError().text();
         qDebug() << query.lastError().text();
         qDebug() << sql_insert;
         qDebug() << "///////////////////////////////////////////";
     }
 }
 
-void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query){
+void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query, QString &Error){
     QString mcc = screening(qvar.value(1).toString());
     QString mnc = screening(qvar.value(2).toString());
     QString plmn = screening(qvar.value(3).toString());
@@ -78,6 +81,7 @@ void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query){
     QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn + ", REGION='" + region + "', COUNTRY='" + country + "', ISO='" + iso + "', OPERATOR='" + Operator + "', BRAND='" + brand + "', TADIG='" + tadig + "', BANDS='" + bands + "' WHERE MCC=" + mcc + " AND MNC=" + mnc;
     if (!query.exec(sql_update))
     {
+        Error = query.lastError().text();
         qDebug() << query.lastError().text();
         qDebug() << sql_update;
         qDebug() << "///////////////////////////////////////////";
