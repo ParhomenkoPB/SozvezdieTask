@@ -108,9 +108,11 @@ bool ReadXlsx::process(QString &file, QString &Error, QList <QString> &Error_db 
                         << (count_update - count_update_error) << " rows. " << " Insert error " << count_insert_error <<
                            ", Update error " << count_update_error;
 
-    qDebug() <<"Database filled unsuccessfully";
+    qDebug() <<"Database filled successfully";
     qDebug() << " Insert " << count_insert - count_insert_error << " rows";
     qDebug() << " Update " << count_update - count_update_error << " rows";
+    qDebug() << " Insert " << count_insert_error << " errors";
+    qDebug() << " Update " << count_update_error << " errors";
 
 
     return true;
