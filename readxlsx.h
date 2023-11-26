@@ -1,4 +1,3 @@
-
 #ifndef READXLSX_H
 #define READXLSX_H
 #include <QVariant>
@@ -13,7 +12,7 @@ public:
 
     static QVariant Get_value(int row, int col, QXlsx::Document &xlsxR, QString &Error);
     static bool proverka(int row, int col, QXlsx::Document &xlsxR);
-    static bool process(QString &file, QString &Error);
+    static bool process(QString &file, QString &Error, QList <QString> &Error_db);
 };
 
 #endif // READXLSX_H

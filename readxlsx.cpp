@@ -2,7 +2,6 @@
 #include "db_handler.h"
 #include <QVariant>
 #include <QString>
-
 #include <QtGlobal>
 #include <QCoreApplication>
 #include <QtCore>
@@ -22,11 +21,11 @@
 #include "xlsxrichstring.h"
 #include "xlsxworkbook.h"
 #include "xlsxworkbook.h"
-//#include <QFileInfo>
+
 using namespace QXlsx;
 const int column = 11;
 
-bool ReadXlsx::process(QString &file, QString &Error) {
+bool ReadXlsx::process(QString &file, QString &Error, QList <QString> &Error_db ) {
     QFileInfo filexlsx(file);
     if(!filexlsx.exists()) {
         Error = "Fail no exists";
@@ -51,6 +50,8 @@ bool ReadXlsx::process(QString &file, QString &Error) {
     QVariant mnc;
     int count_update = 0;
     int count_insert = 0;
+    int count_insert_error = 0;
+    int count_update_error = 0;
     int row = 2;
     QSqlQuery query;
     QMap <int, QVariant> qvar;
@@ -64,7 +65,7 @@ bool ReadXlsx::process(QString &file, QString &Error) {
             mnc = ReadXlsx::Get_value(row,2,xlsxR,Error);
         }
 
-        db_handler::select(query,mcc,mnc, Error);
+        db_handler::select(query,mcc,mnc, Error_db, row);
 
         if(query.next()) {
 
@@ -76,7 +77,7 @@ bool ReadXlsx::process(QString &file, QString &Error) {
                     }
                 }
             }
-            db_handler::update(qvar,query, Error);
+            db_handler::update(qvar,query, Error_db, count_update_error, row);
             //qDebug() << " update " << row;
             count_update++;
             qvar.clear();
@@ -92,7 +93,7 @@ bool ReadXlsx::process(QString &file, QString &Error) {
                     }
                 }
             }
-            db_handler::insert(qvar, query, Error);
+            db_handler::insert(qvar, query, Error_db, count_insert_error, row);
             //qDebug() << " insert " << row;
             count_insert++;
             qvar.clear();
@@ -101,15 +102,17 @@ bool ReadXlsx::process(QString &file, QString &Error) {
         row++;
         check = ReadXlsx::proverka(row,1,xlsxR);
     }
-    QVariant data;
-    data = count_update;
-    data.toString();
-    qDebug() <<"Database filled successfully";
-    qDebug() << " Insert " << count_insert << " rows";
-    qDebug() << " Update " << count_update << " rows";
-    // Error = "Database filled successfully";
+
     QTextStream(&Error) << "Database filled successfully:"
-                           " (Insert " << count_insert << " rows and Update " << count_update << " rows).";
+                           " Insert " << (count_insert - count_insert_error) << " rows and Update "
+                        << (count_update - count_update_error) << " rows. " << " Insert error " << count_insert_error <<
+                           ", Update error " << count_update_error;
+
+    qDebug() <<"Database filled unsuccessfully";
+    qDebug() << " Insert " << count_insert - count_insert_error << " rows";
+    qDebug() << " Update " << count_update - count_update_error << " rows";
+
+
     return true;
 
 }
@@ -137,5 +140,6 @@ QVariant ReadXlsx::Get_value(int row, int col, Document &xlsxR, QString &Error) 
     {
         Error = "Cell is empty";
         qDebug() << "Cell is empty";
+        return QVariant();
     }
 }

@@ -21,11 +21,14 @@ bool db_handler::connection(QSqlQuery &query, QString &Error){
     }
 }
 
-bool db_handler::select(QSqlQuery &query, QVariant mcc, QVariant mnc, QString &Error){
+bool db_handler::select(QSqlQuery &query, QVariant mcc, QVariant mnc, QList <QString> &Error_db, int row){
     QString sql_select = "SELECT mcc, mnc FROM mcc_mnc WHERE MCC=" + mcc.toString() + " AND MNC=" + mnc.toString();
     if (!query.exec(sql_select))
     {
-        Error = query.lastError().text();
+        QString str_error;
+        QTextStream(&str_error) << "Error select in " << row << " row ";
+        Error_db.push_back(str_error);
+        qDebug() << "Error select in " << row << endl;
         qDebug() << query.lastError().text();
         return false;
     }
@@ -43,7 +46,7 @@ QString db_handler::screening(const QString &str) { //экранирование
     return copy_str;
 
 }
-void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query, QString &Error){
+void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query, QList <QString> &Error_db, int &count_insert_error, int row){
     QString mcc = screening(qvar.value(1).toString());
     QString mnc = screening(qvar.value(2).toString());
     QString plmn = screening(qvar.value(3).toString());
@@ -60,14 +63,18 @@ void db_handler::insert(const QMap<int, QVariant> &qvar, QSqlQuery &query, QStri
 
     if (!query.exec(sql_insert))
     {
-        Error = query.lastError().text();
+        QString str_error;
+        QTextStream(&str_error) << "Error insert in " << row << " row ";
+        Error_db.push_back(str_error);
+        count_insert_error++;
+        qDebug() << "Error insert in " << row << endl;
         qDebug() << query.lastError().text();
         qDebug() << sql_insert;
         qDebug() << "///////////////////////////////////////////";
     }
 }
 
-void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query, QString &Error){
+void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query, QList <QString> &Error_db, int &count_update_error, int row){
     QString mcc = screening(qvar.value(1).toString());
     QString mnc = screening(qvar.value(2).toString());
     QString plmn = screening(qvar.value(3).toString());
@@ -81,7 +88,12 @@ void db_handler::update(const QMap<int, QVariant> &qvar, QSqlQuery &query, QStri
     QString sql_update = "UPDATE mcc_mnc SET PLMN=" + plmn + ", REGION='" + region + "', COUNTRY='" + country + "', ISO='" + iso + "', OPERATOR='" + Operator + "', BRAND='" + brand + "', TADIG='" + tadig + "', BANDS='" + bands + "' WHERE MCC=" + mcc + " AND MNC=" + mnc;
     if (!query.exec(sql_update))
     {
-        Error = query.lastError().text();
+
+        QString str_error;
+        QTextStream(&str_error) << "Error update in " << row << " row ";
+        Error_db.push_back(str_error);
+        count_update_error++;
+        qDebug() << "Error update in " << row << endl;
         qDebug() << query.lastError().text();
         qDebug() << sql_update;
         qDebug() << "///////////////////////////////////////////";
